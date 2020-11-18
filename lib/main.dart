@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'dart:ui';
 import 'dart:async';
 import 'package:flip_card/flip_card.dart';
-
+import 'package:avatar_glow/avatar_glow.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -14,8 +14,73 @@ void main() {
       primaryColorLight: Color.fromRGBO(197, 202, 233, 1),
       //primaryTextTheme:,
     ),
-    home: CardGame(),
+    home: Home(),
   ));
+}
+
+class PlayButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AvatarGlow(
+      startDelay: Duration(milliseconds: 1000),
+      glowColor: Color.fromRGBO(197, 202, 233, 1),
+      endRadius: 160.0,
+      duration: Duration(milliseconds: 2000),
+      repeat: true,
+      showTwoGlows: true,
+      repeatPauseDuration: Duration(milliseconds: 500),
+      child: MaterialButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CardGame()),
+          );
+        },
+
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(160.0)),
+          child: Text(
+            "Start",
+            style: TextStyle(
+                fontSize: 75.0,
+                fontWeight: FontWeight.w800,
+                color: Color.fromRGBO(0, 0, 0, 1)),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Home extends StatefulWidget {
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 190.0),
+              child: Text(
+                "Memory Card Game",
+                style: Theme.of(context).textTheme.headline3,
+
+              ),
+            ),
+            PlayButton()
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class CardGame extends StatefulWidget {
@@ -29,7 +94,21 @@ class CardGame extends StatefulWidget {
 class _CardGameState extends State<CardGame> {
   List<GlobalKey<FlipCardState>> cardStateKeys = [];
   List<bool> cardFlips = [];
-  List<String> data = [];
+  List<String> data = [
+    'images/java.jpg',
+    'images/java.jpg',
+    'images/php.jpg',
+    'images/php.jpg',
+    'images/html.png',
+    'images/html.png',
+    'images/css.jpg',
+    'images/css.jpg',
+    'images/js.png',
+    'images/js.png',
+    'images/kotlin.jpg',
+    'images/kotlin.jpg',
+  ];
+
   int previousIndex = -1;
   bool flip = false;
 
@@ -42,12 +121,6 @@ class _CardGameState extends State<CardGame> {
     for (var i = 0; i < widget.size; i++) {
       cardStateKeys.add(GlobalKey<FlipCardState>());
       cardFlips.add(true);
-    }
-    for (var i = 0; i < widget.size ~/ 2; i++) {
-      data.add(i.toString());
-    }
-    for (var i = 0; i < widget.size ~/ 2; i++) {
-      data.add(i.toString());
     }
     startTimer();
     data.shuffle();
@@ -81,7 +154,8 @@ class _CardGameState extends State<CardGame> {
                 ),
               ),
               Theme(
-                data: ThemeData.dark(),
+                data: ThemeData.dark(
+                ),
                 child: Padding(
                   padding: EdgeInsets.all(16.0),
                   child: GridView.builder(
@@ -115,24 +189,45 @@ class _CardGameState extends State<CardGame> {
                           }
                         }
                       },
+
                       direction: FlipDirection.HORIZONTAL,
                       flipOnTouch: cardFlips[index],
                       front: Container(
-                        margin: EdgeInsets.all(4.0),
-                        color: Color.fromRGBO(63, 81, 181, 1),
+                        decoration: BoxDecoration(
+                          //color: Colors.white.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(10
+                            )
+                        ),
+                        margin: EdgeInsets.all(1.0),
+                        child: new Padding(
+                          padding: const EdgeInsets.all(1.0
+                          ),
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                      image: AssetImage('images/hiddenbackgorund.jpg'
+                                      ),
+                                      fit: BoxFit.fill)
+                              )
+                          ),
+                        ),
                       ),
                       back: Container(
                         margin: EdgeInsets.all(4.0),
-                        color: Color.fromRGBO(48, 63, 159, 1),
                         child: Center(
-                          child: Text(
-                            "${data[index]}",
-                            style: Theme.of(context).textTheme.headline2,
+                          child: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: DecorationImage(
+                                      image: AssetImage("${data[index]}"
+                                      ),
+                                      fit: BoxFit.fill)
+                              )
                           ),
                         ),
                       ),
                     ),
-                    itemCount: 12,
+                    itemCount: data.length,
                   ),
                 ),
               ),
@@ -143,18 +238,31 @@ class _CardGameState extends State<CardGame> {
     );
   }
 
+  bool won = false;
   //Display Results
   showResult() {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: Text("Congrats"),
+        title: Text("Winner!!"
+        ),
         content: Text(
           "Time $time",
           style: Theme.of(context).textTheme.headline2,
         ),
         actions: <Widget>[
+          FlatButton(
+            onPressed: () {
+              won = false;
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => Home(),
+                ),
+              );
+            },
+            child: Text("Cancel"),
+          ),
           FlatButton(
             onPressed: () {
               Navigator.of(context).pushReplacement(
@@ -165,7 +273,8 @@ class _CardGameState extends State<CardGame> {
                 ),
               );
             },
-            child: Text("Play Again"),
+            child: Text("Play Again"
+            ),
           ),
         ],
       ),

@@ -20,6 +20,7 @@ dependencies:
 
   cupertino_icons: ^0.1.3
   flip_card: ^0.4.4
+  avatar_glow: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -33,6 +34,13 @@ flutter:
 
   assets:
     - images/hiddenbackgorund.jpg
+    - images/java.jpg
+    - images/php.jpg
+    - images/html.png
+    - images/css.jpg
+    - images/js.png
+    - images/kotlin.jpg
+    - images/cardmem.jpg
 
 
 
